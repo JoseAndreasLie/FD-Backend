@@ -1,9 +1,9 @@
-## Manual Installation
+<!-- ## Manual Installation
 
 Clone the repo:
 
 ```bash
-git clone https://gitlab.com/concise.co.id/boilerplate-concise-ts-express.git
+# git clone https://gitlab.com/concise.co.id/boilerplate-concise-ts-express.git
 cd typescript-express-postgresql-boilerplate
 ```
 
@@ -19,17 +19,16 @@ Set the environment variables:
 cp .env.example .env
 
 # open .env and modify the environment variables (if needed)
-```
-
+``` -->
 
 ## Features
 
-- **ORM**: [Sequelize](https://sequelize.org/)  orm for object data modeling
-- **Migration and Seed**: DB migration and Seed using [Sequelize-CLI](https://github.com/sequelize/cli) 
+- **ORM**: [Sequelize](https://sequelize.org/) orm for object data modeling
+- **Migration and Seed**: DB migration and Seed using [Sequelize-CLI](https://github.com/sequelize/cli)
 - **Authentication and authorization**: using [passport](http://www.passportjs.org)
 - **Error handling**: centralized error handling
 - **Validation**: request data validation using [Joi](https://github.com/hapijs/joi)
-- **Logging**: using [winston](https://github.com/winstonjs/winston) 
+- **Logging**: using [winston](https://github.com/winstonjs/winston)
 - **Testing**: unittests using [Mocha](https://mochajs.org/)
 - **Caching**: Caching using [Redis](https://redis.io/)
 - **Bidirectional Communication**: using [Scoket](https://socket.io/)
