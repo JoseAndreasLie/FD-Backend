@@ -8,6 +8,7 @@ import responseHandler from '../../helper/responseHandler';
 import IAuthService from '../contracts/IAuthService';
 import RedisService from './RedisService';
 import { tokenTypes } from '../../config/tokens';
+import { responseMessageConstant } from '../../config/constant';
 
 export default class AuthService implements IAuthService {
     private userDao: UserDao;
@@ -24,27 +25,51 @@ export default class AuthService implements IAuthService {
 
     loginWithEmailPassword = async (email: string, password: string) => {
         try {
-            let message = 'Login Successful';
-            let user = await this.userDao.findByEmail(email);
-            if (user == null) {
+            // find user by
+            let userData = await this.userDao.findOne({
+                where: { email: email },
+            });
+
+            // validate user is exist, user is active and user password is valid
+            if (
+                !userData ||
+                !(await bcrypt.compare(password, userData.password))
+            ) {
                 return responseHandler.returnError(
                     httpStatus.BAD_REQUEST,
-                    'Invalid Email Address!'
+                    responseMessageConstant.LOGIN_400_INCORRECT_EMAIL_OR_PASS
                 );
             }
-            const isPasswordValid = await bcrypt.compare(password, user.password);
-            user = user.toJSON();
-            delete user.password;
 
-            if (!isPasswordValid) {
-                message = 'Wrong Password!';
-                return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
-            }
+            // get role data
+            // let roles = await userData.getRoles({
+            //     attributes: ['id', 'name', 'level'],
+            //     order: [['level', 'ASC']],
+            //     raw: true,
+            //     limit: 1,
+            //     joinTableAttributes: [],
+            // });
 
-            return responseHandler.returnSuccess(httpStatus.OK, message, user);
+            
+
+            // parse sequelize object to raw object for delete password data
+            userData = userData.toJSON();
+
+            // delete password data in user json
+            delete userData.password;
+            delete userData.biometric;
+
+            return responseHandler.returnSuccess(
+                httpStatus.OK,
+                responseMessageConstant.LOGIN_200_SUCCESS,
+                { ...userData }
+            );
         } catch (e) {
-            logger.error(e);
-            return responseHandler.returnError(httpStatus.BAD_GATEWAY, 'Something Went Wrong!!');
+            console.log(e);
+            return responseHandler.returnError(
+                httpStatus.BAD_GATEWAY,
+                responseMessageConstant.HTTP_502_BAD_GATEWAY
+            );
         }
     };
 

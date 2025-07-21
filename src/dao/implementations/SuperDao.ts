@@ -28,6 +28,15 @@ export default class SuperDao implements ISuperDao {
             });
     }
 
+    public async findOne(options: any): Promise<any> {
+        return this.Model.findOne(options)
+            .then((result: any) => result)
+            .catch((e: any) => {
+                logger.error(e);
+                console.log(e);
+            });
+    }
+
     public async findOneByWhere(
         where: object,
         attributes: string[] | null = null,

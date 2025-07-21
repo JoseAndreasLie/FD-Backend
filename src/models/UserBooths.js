@@ -9,14 +9,14 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            UserBooths.belongsTo(models.users, {
-                foreignKey: 'user_id',
-                as: 'user',
-            });
-            UserBooths.belongsTo(models.booths, {
-                foreignKey: 'booth_id',
-                as: 'booth',
-            });
+            // UserBooths.belongsTo(models.users, {
+            //     foreignKey: 'user_id',
+            //     as: 'user',
+            // });
+            // UserBooths.belongsTo(models.booths, {
+            //     foreignKey: 'booth_id',
+            //     as: 'booth',
+            // });
         }
     }
     UserBooths.init(

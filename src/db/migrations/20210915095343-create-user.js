@@ -21,6 +21,16 @@ module.exports = {
                 type: Sequelize.STRING,
                 allowNull: true,
             },
+            role_id: {
+                type: Sequelize.UUID,
+                allowNull: true,
+                // references: {
+                //     model: 'roles',
+                //     key: 'id',
+                // },
+                // onUpdate: 'CASCADE',
+                // onDelete: 'SET NULL',
+            },
             // status: {
             //     type: Sequelize.INTEGER,
             // },

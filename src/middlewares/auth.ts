@@ -3,7 +3,6 @@ import passport from 'passport';
 import httpStatus from 'http-status';
 import ApiError from '../helper/ApiError';
 import { IUser } from '../models/interfaces/IUser';
-import { jwtVerifyManually } from '../config/passport';
 
 const verifyCallback =
     (req: Request, res: Response, resolve: any, reject: any) =>
@@ -32,14 +31,3 @@ export const auth = () => async (req: Request, res: Response, next: NextFunction
             next(err);
         });
 };
-
-export const authByManuallVerify =
-    () => async (req: Request, res: Response, next: NextFunction) => {
-        new Promise((resolve, reject) => {
-            jwtVerifyManually(req, verifyCallback(req, res, resolve, reject));
-        })
-            .then(() => next())
-            .catch((err) => {
-                next(err);
-            });
-    };
