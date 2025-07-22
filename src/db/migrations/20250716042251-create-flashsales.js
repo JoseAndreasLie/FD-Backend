@@ -27,8 +27,8 @@ module.exports = {
             end_time: {
                 type: Sequelize.DATE,
             },
-            queue_early_access_minutes: {
-                type: Sequelize.INTEGER,
+            queue_early_access_time: {
+                type: Sequelize.DATE,
             },
             created_at: {
                 allowNull: false,

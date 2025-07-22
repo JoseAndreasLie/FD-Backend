@@ -14,6 +14,9 @@ module.exports = {
             img_url: {
                 type: Sequelize.STRING,
             },
+            price: {
+                type: Sequelize.DECIMAL,
+            },
             booth_id: {
                 type: Sequelize.UUID,
                 references: {

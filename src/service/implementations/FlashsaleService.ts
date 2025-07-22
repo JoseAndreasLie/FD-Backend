@@ -52,7 +52,7 @@ export default class FlashsaleService {
 
     createFlashSale = async (body, userInfo) => {
         try {
-            const { name, date, start_time, end_time, queue_early_access_minutes } = body;
+            const { name, date, start_time, end_time, queue_early_access_time } = body;
 
             if (!name || !date || !start_time || !end_time) {
                 return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Fields are required');
@@ -74,10 +74,15 @@ export default class FlashsaleService {
             // Create datetime in GMT+7 by subtracting 7 hours from UTC
             const startDateTimeUTC = new Date(`${date}T${start_time}:00.000Z`);
             const endDateTimeUTC = new Date(`${date}T${end_time}:00.000Z`);
+            const earlyDateTimeUTC = new Date(`${date}T${queue_early_access_time}:00.000Z`);
 
+            console.log('\n\tearlyDateTimeUTC:', earlyDateTimeUTC);
+            
             // Subtract 7 hours to get the correct UTC time that represents GMT+7
             const startDateTime = new Date(startDateTimeUTC.getTime() - 7 * 60 * 60 * 1000);
             const endDateTime = new Date(endDateTimeUTC.getTime() - 7 * 60 * 60 * 1000);
+            const earlyAccessTime = new Date(earlyDateTimeUTC.getTime() - 7 * 60 * 60 * 1000);
+            console.log('\n\n\tearlyDateTime:', earlyAccessTime);
 
             // Validate that end time is after start time
             if (endDateTime <= startDateTime) {
@@ -87,13 +92,21 @@ export default class FlashsaleService {
                 );
             }
 
-            const newFlashSale = await models.flashsales.create({
+            // Validate that early access time is before start time
+            if (earlyAccessTime >= startDateTime) {
+                return responseHandler.returnError(
+                    httpStatus.BAD_REQUEST,
+                    'Early access time must be before start time'
+                );
+            }
+
+            await models.flashsales.create({
                 id: uuid.v4(),
                 name,
                 booth_id: userBooth.id,
                 start_time: startDateTime,
                 end_time: endDateTime,
-                queue_early_access_minutes: queue_early_access_minutes || 0,
+                queue_early_access_time: earlyAccessTime || 0,
             });
 
             return responseHandler.returnSuccess(

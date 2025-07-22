@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
             },
             start_time: DataTypes.DATE,
             end_time: DataTypes.DATE,
-            queue_early_access_minutes: DataTypes.INTEGER,
+            queue_early_access_time: DataTypes.DATE,
         },
         {
             sequelize,

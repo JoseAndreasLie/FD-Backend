@@ -15,7 +15,7 @@ module.exports = {
             flashsale_id: {
                 type: Sequelize.UUID,
             },
-            price: {
+            flashsale_price: {
                 type: Sequelize.DECIMAL,
             },
             created_at: {
