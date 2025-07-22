@@ -27,6 +27,7 @@ export default class ProductService {
                     booth_id: userBooth.id,
                     deleted_at: null,
                 },
+                order: [['name', 'ASC']],
                 attributes: {
                     exclude: [
                         'created_at',
@@ -54,8 +55,6 @@ export default class ProductService {
             if (!name || !price || !img_url) {
                 return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Fields are required');
             }
-
-            console.log('price', price);
 
             const userBooth = await models.booths.findOne({
                 where: {

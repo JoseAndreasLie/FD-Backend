@@ -27,6 +27,7 @@ export default class FlashsaleService {
                     booth_id: userBooth.id,
                     deleted_at: null,
                 },
+                order: [['name', 'ASC']],
                 attributes: {
                     exclude: [
                         'created_at',
