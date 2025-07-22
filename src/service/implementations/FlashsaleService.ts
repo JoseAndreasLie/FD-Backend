@@ -25,7 +25,15 @@ export default class FlashsaleService {
             const userFlashSaleList = await models.flashsales.findAll({
                 where: {
                     booth_id: userBooth.id,
+                    deleted_at: null,
                 },
+                attributes: {
+                    exclude: [
+                        'created_at',
+                        'updated_at',
+                        'deleted_at',
+                    ]
+                }
             });
 
             // Format the dates for display
@@ -37,6 +45,11 @@ export default class FlashsaleService {
                 end_time: flashsale.end_time.toLocaleString('en-US', {
                     timeZone: 'Asia/Jakarta',
                 }),
+                queue_early_access_time: flashsale.queue_early_access_time
+                    ? flashsale.queue_early_access_time.toLocaleString('en-US', {
+                        timeZone: 'Asia/Jakarta',
+                    })
+                    : null,
             }));
 
             return responseHandler.returnSuccess(

@@ -5,7 +5,7 @@ import { logger } from '../config/logger';
 // import { IFlashsale } from '../models/interfaces/IFlashsale';
 import FlashsaleService from '../service/implementations/FlashsaleService';
 
-export default class AuthController {
+export default class FlashsaleController {
 
     private flashsaleService: FlashsaleService;
 
