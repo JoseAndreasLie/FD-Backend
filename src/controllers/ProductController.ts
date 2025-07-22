@@ -33,4 +33,15 @@ export default class ProductController {
             res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
+
+    updateProduct = async (req: Request, res: Response) => {
+        try {
+            const productResponse: ApiServiceResponse = await this.productService.updateProduct(req.params.id, req.body, req.userInfo);
+            const { code, message, data } = productResponse.response;
+            res.status(productResponse.statusCode).send({ code, message, data });
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
 }

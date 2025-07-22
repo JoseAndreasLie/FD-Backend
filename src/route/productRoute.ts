@@ -18,4 +18,10 @@ router.post(
     productController.createProduct
 );
 
+router.put(
+    '/:id',
+    auth(),
+    productController.updateProduct
+);
+
 export default router;

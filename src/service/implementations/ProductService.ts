@@ -88,4 +88,61 @@ export default class ProductService {
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, 'Something Went Wrong!!');
         }
     };
+
+    updateProduct = async (id, body, userInfo) => {
+        try {
+            const { name, price, img_url } = body;
+
+            if (!name || !price || !img_url) {
+                return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Fields are required');
+            }
+
+            const userBooth = await models.booths.findOne({
+                where: {
+                    user_id: userInfo.id,
+                },
+            });
+
+            if (!userBooth) {
+                return responseHandler.returnError(
+                    httpStatus.NOT_FOUND,
+                    'No Booth Found for the User'
+                );
+            }
+
+            const product = await models.products.findOne({
+                where: {
+                    id,
+                    booth_id: userBooth.id,
+                    deleted_at: null,
+                },
+                attributes: {
+                    exclude: [
+                        'created_at',
+                        'updated_at',
+                        'deleted_at',
+                    ]
+                }
+            });
+
+            if (!product) {
+                return responseHandler.returnError(httpStatus.NOT_FOUND, 'Product Not Found');
+            }
+
+            product.name = name;
+            product.price = parseFloat(price) || 0;
+            product.img_url = img_url;
+
+            await product.save();
+
+            return responseHandler.returnSuccess(
+                httpStatus.OK,
+                'Product Updated Successfully',
+                product
+            );
+        } catch (e) {
+            logger.error(e);
+            return responseHandler.returnError(httpStatus.BAD_GATEWAY, 'Something Went Wrong!!');
+        }
+    }
 }
