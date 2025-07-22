@@ -9,10 +9,10 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Products.belongsTo(models.brands, {
-                foreignKey: 'brand_id',
-                as: 'brand',
-            });
+            // Products.belongsTo(models.brands, {
+            //     foreignKey: 'brand_id',
+            //     as: 'brand',
+            // });
             Products.belongsTo(models.booths, {
                 foreignKey: 'booth_id',
                 as: 'booth',
@@ -23,12 +23,15 @@ module.exports = (sequelize, DataTypes) => {
         {
             name: DataTypes.STRING,
             img_url: DataTypes.STRING,
-            brand_id: DataTypes.UUIDV4,
+            // brand_id: DataTypes.UUIDV4,
             booth_id: DataTypes.UUIDV4,
         },
         {
             sequelize,
             modelName: 'products',
+            createdAt: 'created_at',
+            updatedAt: 'updated_at',
+            deletedAt: 'deleted_at',
         }
     );
     return Products;

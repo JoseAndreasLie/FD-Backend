@@ -26,6 +26,9 @@ module.exports = (sequelize, DataTypes) => {
             sequelize,
             modelName: 'queue_entry',
             underscored: true,
+            createdAt: 'created_at',
+            updatedAt: 'updated_at',
+            deletedAt: 'deleted_at',
         }
     );
     return QueueEntry;

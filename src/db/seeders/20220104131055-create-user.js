@@ -3,12 +3,26 @@ const bcrypt = require('bcryptjs');
 
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        return queryInterface.bulkInsert('users', [
+        // Create the user first
+        const userId = uuidv4();
+
+        await queryInterface.bulkInsert('users', [
             {
-                id : Sequelize.literal('gen_random_uuid()'),
-                username: 'John Doe',
-                email: 'user@example.com',
-                password: bcrypt.hashSync('123456', 8),
+                id: userId,
+                username: 'Cantika',
+                email: 'cantika@gmail.com',
+                password: bcrypt.hashSync('123456', 10),
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+        ]);
+
+        // Create booths for the user
+        return queryInterface.bulkInsert('booths', [
+            {
+                id: uuidv4(),
+                name: "Cantika's Fashion Booth",
+                user_id: userId,
                 created_at: new Date(),
                 updated_at: new Date(),
             },
@@ -16,6 +30,7 @@ module.exports = {
     },
 
     down: async (queryInterface, Sequelize) => {
+        await queryInterface.bulkDelete('booths', null, {});
         return queryInterface.bulkDelete('users', null, {});
     },
 };

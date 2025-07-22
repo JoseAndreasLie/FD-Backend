@@ -14,13 +14,6 @@ module.exports = {
             img_url: {
                 type: Sequelize.STRING,
             },
-            brand_id: {
-                type: Sequelize.UUID,
-                references: {
-                    model: 'brands',
-                    key: 'id',
-                },
-            },
             booth_id: {
                 type: Sequelize.UUID,
                 references: {

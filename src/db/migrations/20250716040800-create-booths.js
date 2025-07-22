@@ -11,11 +11,20 @@ module.exports = {
             name: {
                 type: Sequelize.STRING,
             },
-            brand_id: {
-                allowNull: false,
+            // brand_id: {
+            //     allowNull: false,
+            //     type: Sequelize.UUID,
+            //     references: {
+            //         model: 'brands',
+            //         key: 'id',
+            //     },
+            //     onUpdate: 'CASCADE',
+            //     onDelete: 'CASCADE',
+            // },
+            user_id: {
                 type: Sequelize.UUID,
                 references: {
-                    model: 'brands',
+                    model: 'users',
                     key: 'id',
                 },
                 onUpdate: 'CASCADE',

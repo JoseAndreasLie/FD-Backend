@@ -9,10 +9,10 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Flashsales.belongsTo(models.brands, {
-                foreignKey: 'brand_id',
-                as: 'brand',
-            });
+            // Flashsales.belongsTo(models.brands, {
+            //     foreignKey: 'brand_id',
+            //     as: 'brand',
+            // });
             Flashsales.belongsTo(models.booths, {
                 foreignKey: 'booth_id',
                 as: 'booth',
@@ -22,10 +22,10 @@ module.exports = (sequelize, DataTypes) => {
     Flashsales.init(
         {
             name: DataTypes.STRING,
-            brand_id: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
+            // brand_id: {
+            //     type: DataTypes.STRING,
+            //     allowNull: false,
+            // },
             booth_id: {
                 type: DataTypes.STRING,
                 allowNull: false,
@@ -38,6 +38,9 @@ module.exports = (sequelize, DataTypes) => {
             sequelize,
             modelName: 'flashsales',
             underscored: true,
+            createdAt: 'created_at',
+            updatedAt: 'updated_at',
+            deletedAt: 'deleted_at',
         }
     );
     return Flashsales;

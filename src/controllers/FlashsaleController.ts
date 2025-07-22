@@ -23,4 +23,15 @@ export default class AuthController {
             res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     }
+
+    createFlashSale = async (req: Request, res: Response) => {
+        try {
+            const flashSale: ApiServiceResponse = await this.flashsaleService.createFlashSale(req.body, req.userInfo);
+            const { code, message, data } = flashSale.response;
+            res.status(flashSale.statusCode).send({ code, message, data });
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    }
 }

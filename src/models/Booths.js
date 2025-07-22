@@ -9,10 +9,10 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Booths.belongsTo(models.brands, {
-                foreignKey: 'brand_id',
-                as: 'brand',
-            });
+            // Booths.belongsTo(models.brands, {
+            //     foreignKey: 'brand_id',
+            //     as: 'brand',
+            // });
         }
     }
     Booths.init(
@@ -23,6 +23,9 @@ module.exports = (sequelize, DataTypes) => {
             sequelize,
             modelName: 'booths',
             underscored: true,
+            createdAt: 'created_at',
+            updatedAt: 'updated_at',
+            deletedAt: 'deleted_at',
         }
     );
     return Booths;

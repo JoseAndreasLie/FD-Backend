@@ -10,6 +10,13 @@ const flashsaleController = new FlashsaleController();
 router.get(
     '/', 
     auth(),
-    flashsaleController.getFlashSaleList);
+    flashsaleController.getFlashSaleList
+);
+
+router.post(
+    '/',
+    auth(),
+    flashsaleController.createFlashSale
+);
 
 export default router;
