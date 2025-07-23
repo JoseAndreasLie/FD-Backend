@@ -5,9 +5,8 @@ module.exports = {
         await queryInterface.createTable('flashsale_products', {
             id: {
                 allowNull: false,
-                autoIncrement: true,
                 primaryKey: true,
-                type: Sequelize.INTEGER,
+                type: Sequelize.UUID,
             },
             product_id: {
                 type: Sequelize.UUID,
@@ -15,8 +14,9 @@ module.exports = {
             flashsale_id: {
                 type: Sequelize.UUID,
             },
-            flashsale_price: {
-                type: Sequelize.DECIMAL,
+            is_sold_out: {
+                type: Sequelize.BOOLEAN,
+                defaultValue: false,
             },
             created_at: {
                 allowNull: false,

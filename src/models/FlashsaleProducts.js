@@ -1,7 +1,7 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class flashsale_products extends Model {
+    class FlashsaleProducts extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -9,14 +9,29 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            FlashsaleProducts.belongsTo(models.flashsales, {
+                foreignKey: 'flashsale_id',
+                as: 'flashsale',
+            });
+
+            // // Association with product
+            FlashsaleProducts.belongsTo(models.products, {
+                foreignKey: 'product_id',
+                as: 'product',
+            });
         }
     }
-    flashsale_products.init(
+    FlashsaleProducts.init(
         {
+            id: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4, // Add this for auto UUID generation
+                primaryKey: true,
+                allowNull: false,
+            },
             product_id: DataTypes.UUIDV4,
             flashsale_id: DataTypes.UUIDV4,
             is_sold_out: DataTypes.BOOLEAN,
-            price : DataTypes.DECIMAL
         },
         {
             sequelize,
@@ -27,5 +42,5 @@ module.exports = (sequelize, DataTypes) => {
             deletedAt: 'deleted_at',
         }
     );
-    return flashsale_products;
+    return FlashsaleProducts;
 };

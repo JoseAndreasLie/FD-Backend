@@ -13,9 +13,23 @@ module.exports = (sequelize, DataTypes) => {
             //     foreignKey: 'brand_id',
             //     as: 'brand',
             // });
-            Products.belongsTo(models.booths, {
-                foreignKey: 'booth_id',
-                as: 'booth',
+            // Products.belongsTo(models.booths, {
+            //     foreignKey: 'booth_id',
+            //     // as: 'booth',
+            // });
+
+            // // Association with flashsale_products
+            // Products.hasMany(models.flashsale_products, {
+            //     foreignKey: 'product_id',
+            //     as: 'flashsale_product',
+            // });
+
+            // // Many-to-many relationship with flashsales
+            Products.belongsToMany(models.flashsales, {
+                through: models.flashsale_products,
+                foreignKey: 'product_id',
+                otherKey: 'flashsale_id',
+                as: 'flashsales', // Different alias from Flashsales model
             });
         }
     }
@@ -25,6 +39,7 @@ module.exports = (sequelize, DataTypes) => {
             img_url: DataTypes.STRING,
             // brand_id: DataTypes.UUIDV4,
             price: DataTypes.DECIMAL,
+            after_flashsale_price: DataTypes.DECIMAL,
             booth_id: DataTypes.UUIDV4,
         },
         {

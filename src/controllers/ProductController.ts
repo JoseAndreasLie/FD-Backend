@@ -44,4 +44,15 @@ export default class ProductController {
             res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
+
+    deleteProduct = async (req: Request, res: Response) => {
+        try {
+            const productResponse: ApiServiceResponse = await this.productService.deleteProduct(req.params.id, req.userInfo);
+            const { code, message, data } = productResponse.response;
+            res.status(productResponse.statusCode).send({ code, message, data });
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    }
 }

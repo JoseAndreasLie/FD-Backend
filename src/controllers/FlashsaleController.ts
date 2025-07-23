@@ -6,7 +6,6 @@ import { logger } from '../config/logger';
 import FlashsaleService from '../service/implementations/FlashsaleService';
 
 export default class FlashsaleController {
-
     private flashsaleService: FlashsaleService;
 
     constructor() {
@@ -15,23 +14,73 @@ export default class FlashsaleController {
 
     getFlashSaleList = async (req: Request, res: Response) => {
         try {
-            const flashSaleList: ApiServiceResponse = await this.flashsaleService.getFlashSaleList(req.userInfo);
+            const flashSaleList: ApiServiceResponse = await this.flashsaleService.getFlashSaleList(
+                req.userInfo
+            );
             const { code, message, data } = flashSaleList.response;
             res.status(flashSaleList.statusCode).send({ code, message, data });
         } catch (e) {
             logger.error(e);
             res.status(httpStatus.BAD_GATEWAY).send(e);
         }
-    }
+    };
 
     createFlashSale = async (req: Request, res: Response) => {
         try {
-            const flashSale: ApiServiceResponse = await this.flashsaleService.createFlashSale(req.body, req.userInfo);
+            const flashSale: ApiServiceResponse = await this.flashsaleService.createFlashSale(
+                req.body,
+                req.userInfo
+            );
             const { code, message, data } = flashSale.response;
             res.status(flashSale.statusCode).send({ code, message, data });
         } catch (e) {
             logger.error(e);
             res.status(httpStatus.BAD_GATEWAY).send(e);
         }
-    }
+    };
+
+    getFlashSaleById = async (req: Request, res: Response) => {
+        try {
+            const flashSale: ApiServiceResponse = await this.flashsaleService.getFlashSaleById(
+                req.params,
+                req.userInfo
+            );
+            const { code, message, data } = flashSale.response;
+            res.status(flashSale.statusCode).send({ code, message, data });
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
+
+    updateFlashSale = async (req: Request, res: Response) => {
+        try {
+            console.log('\n\n', req.params, req.body);
+            const flashSale: ApiServiceResponse = await this.flashsaleService.updateFlashSale(
+                req.params,
+                req.body,
+                req.userInfo
+            );
+            const { code, message, data } = flashSale.response;
+            res.status(flashSale.statusCode).send({ code, message, data });
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
+
+    deleteFlashSale = async (req: Request, res: Response) => {
+        try {
+            console.log('\n\n', req.params, req.body);
+            const flashSale: ApiServiceResponse = await this.flashsaleService.deleteFlashSale(
+                req.params,
+                req.userInfo
+            );
+            const { code, message } = flashSale.response;
+            res.status(flashSale.statusCode).send({ code, message });
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
 }

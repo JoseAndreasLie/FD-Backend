@@ -9,10 +9,28 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            // Flashsales.belongsTo(models.brands, {
-            //     foreignKey: 'brand_id',
-            //     as: 'brand',
+            // Association with flashsale_products (junction table)
+            // Flashsales.hasMany(models.flashsale_products, {
+            //     foreignKey: 'flashsale_id',
+            //     as: 'flashsale_product', // Use a unique alias for the association
             // });
+
+            Flashsales.belongsToMany(models.products, {
+                through: models.flashsale_products,
+                foreignKey: 'flashsale_id',
+                otherKey: 'product_id',
+                as: 'products', // Use unique alias for the association
+            })
+
+            // // Many-to-many relationship with products through flashsale_products
+            // Flashsales.belongsToMany(models.products, {
+            //     through: models.flashsale_products,
+            //     foreignKey: 'flashsale_id',
+            //     otherKey: 'product_id',
+            //     as: 'product', // Use unique alias
+            // });
+
+            // Association with booth
             Flashsales.belongsTo(models.booths, {
                 foreignKey: 'booth_id',
                 as: 'booth',
@@ -30,9 +48,12 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            start_time: DataTypes.DATE,
-            end_time: DataTypes.DATE,
-            queue_early_access_time: DataTypes.DATE,
+            date: DataTypes.STRING,
+            start_time: DataTypes.STRING,
+            end_time: DataTypes.STRING,
+            queue_early_access_time: DataTypes.STRING,
+            flashsale_active_utc: DataTypes.DATE,
+            flashsale_inactive_utc: DataTypes.DATE,
         },
         {
             sequelize,

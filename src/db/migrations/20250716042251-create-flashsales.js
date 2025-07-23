@@ -21,13 +21,22 @@ module.exports = {
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             },
+            date: {
+                type: Sequelize.STRING, 
+            },
             start_time: {
-                type: Sequelize.DATE,
+                type: Sequelize.STRING,
             },
             end_time: {
-                type: Sequelize.DATE,
+                type: Sequelize.STRING,
             },
             queue_early_access_time: {
+                type: Sequelize.STRING,
+            },
+            flashsale_active_utc: {
+                type: Sequelize.DATE,
+            },
+            flashsale_inactive_utc: {
                 type: Sequelize.DATE,
             },
             created_at: {

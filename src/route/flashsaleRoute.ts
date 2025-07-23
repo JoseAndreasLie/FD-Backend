@@ -19,4 +19,22 @@ router.post(
     flashsaleController.createFlashSale
 );
 
+router.get(
+    '/:flashsaleId',
+    auth(),
+    flashsaleController.getFlashSaleById
+);
+
+router.put(
+    '/:flashsaleId',
+    auth(),
+    flashsaleController.updateFlashSale
+);
+
+router.delete(
+    '/:flashsaleId',
+    auth(),
+    flashsaleController.deleteFlashSale
+);
+
 export default router;

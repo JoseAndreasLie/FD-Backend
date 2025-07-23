@@ -17,6 +17,9 @@ module.exports = {
             price: {
                 type: Sequelize.DECIMAL,
             },
+            after_flashsale_price: {
+                type: Sequelize.DECIMAL,
+            },
             booth_id: {
                 type: Sequelize.UUID,
                 references: {

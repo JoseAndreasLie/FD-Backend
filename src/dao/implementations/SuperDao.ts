@@ -138,6 +138,15 @@ export default class SuperDao implements ISuperDao {
             });
     }
 
+    protected async delete(options: any) {
+        return this.Model.destroy(options)
+            .then((result: any) => result)
+            .catch((e: any) => {
+                logger.error(e);
+                console.log(e);
+            });
+    }
+
     public async bulkCreate(data: object[]) {
         return this.Model.bulkCreate(data)
             .then((result) => result)
