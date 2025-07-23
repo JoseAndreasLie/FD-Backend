@@ -31,6 +31,13 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: 'flashsale_id',
                 as: 'flashsales', // Different alias from Flashsales model
             });
+
+            Products.belongsToMany(models.queue_entries, {
+                through: models.queue_entry_products,
+                foreignKey: 'product_id',
+                otherKey: 'queue_entry_id',
+                as: 'queue_entries', // Different alias from QueueEntries model
+            });
         }
     }
     Products.init(

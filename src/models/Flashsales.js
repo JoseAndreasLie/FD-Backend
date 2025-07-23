@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
             //     allowNull: false,
             // },
             booth_id: {
-                type: DataTypes.STRING,
+                type: DataTypes.UUIDV4,
                 allowNull: false,
             },
             date: DataTypes.STRING,

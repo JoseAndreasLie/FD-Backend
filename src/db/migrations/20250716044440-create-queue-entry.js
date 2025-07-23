@@ -18,6 +18,13 @@ module.exports = {
                     key: 'id',
                 },
             },
+            flashsale_id: {
+                type: Sequelize.UUID,
+                references: {
+                    model: 'flashsales',
+                    key: 'id',
+                },
+            },
             ticket_code: {
                 type: Sequelize.STRING,
             },

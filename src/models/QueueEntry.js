@@ -1,7 +1,7 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class QueueEntry extends Model {
+    class QueueEntries extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -9,12 +9,19 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            QueueEntries.belongsToMany(models.products, {
+                through: models.queue_entry_products,
+                foreignKey: 'queue_entry_id',
+                otherKey: 'product_id',
+                as: 'products',
+            })
         }
     }
-    QueueEntry.init(
+    QueueEntries.init(
         {
             device_id: DataTypes.STRING,
             booth_id: DataTypes.UUIDV4,
+            flashsale_id: DataTypes.UUIDV4,
             ticket_code: DataTypes.STRING,
             queue_number: DataTypes.INTEGER,
             join_time: DataTypes.DATE,
@@ -24,12 +31,12 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             sequelize,
-            modelName: 'queue_entry',
+            modelName: 'queue_entries',
             underscored: true,
             createdAt: 'created_at',
             updatedAt: 'updated_at',
             deletedAt: 'deleted_at',
         }
     );
-    return QueueEntry;
+    return QueueEntries;
 };
