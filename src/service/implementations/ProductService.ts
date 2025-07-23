@@ -91,7 +91,7 @@ export default class ProductService {
 
     updateProduct = async (id, body, userInfo) => {
         try {
-            const { name, price, img_url } = body;
+            const { name, price, img_url, after_flashsale_price } = body;
 
             if (!name || !price || !img_url) {
                 return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Fields are required');
@@ -132,6 +132,7 @@ export default class ProductService {
             product.name = name;
             product.price = parseFloat(price) || 0;
             product.img_url = img_url;
+            product.after_flashsale_price = parseFloat(after_flashsale_price) || 0;
 
             await product.save();
 
