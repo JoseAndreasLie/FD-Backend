@@ -90,31 +90,12 @@ export default class QueueService {
 
     getQueueByDeviceId = async (deviceId) => {
         try {
-            const queue = await models.queue_entries.findOne({
+            const queue = await models.queue_entries.findAll({
                 where: {
                     device_id: deviceId,
                     status: 'active',
                     deleted_at: null,
                 },
-                include: [
-                    {
-                        model: models.flashsales,
-                        as: 'flashsale',
-                        attributes: ['id', 'name', 'start_time', 'end_time'],
-                    },
-                    {
-                        model: models.queue_entry_products,
-                        as: 'products',
-                        attributes: ['product_id', 'quantity'],
-                        include: [
-                            {
-                                model: models.products,
-                                as: 'product',
-                                attributes: ['id', 'name', 'price', 'img_url'],
-                            },
-                        ],
-                    },
-                ],
             });
 
             if (!queue) {
