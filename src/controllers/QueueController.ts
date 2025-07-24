@@ -38,4 +38,31 @@ export default class QueueController {
             res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
+
+    getBoothQueue = async (req: Request, res: Response) => {
+        try {
+            const queueResponse: ApiServiceResponse = await this.queueService.getBoothQueue(
+                req.userInfo
+            );
+            const { code, message, data } = queueResponse.response;
+            res.status(queueResponse.statusCode).send({ code, message, data });
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
+
+    nextQueue = async (req: Request, res: Response) => {
+        try {
+            const queueResponse: ApiServiceResponse = await this.queueService.nextQueue(
+                req.userInfo,
+                req.body.flashsale_id
+            );
+            const { code, message, data } = queueResponse.response;
+            res.status(queueResponse.statusCode).send({ code, message, data });
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
 }

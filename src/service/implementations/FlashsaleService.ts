@@ -89,7 +89,11 @@ export default class FlashsaleService {
 
             // Validate start_time and end_time format is HH:MM:SS AM/PM
             const timeRegex = /^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/;
-            if (!timeRegex.test(start_time) || !timeRegex.test(end_time) || !timeRegex.test(queue_early_access_time)) {
+            if (
+                !timeRegex.test(start_time) ||
+                !timeRegex.test(end_time) ||
+                !timeRegex.test(queue_early_access_time)
+            ) {
                 await transaction.rollback();
                 return responseHandler.returnError(
                     httpStatus.BAD_REQUEST,
@@ -138,6 +142,37 @@ export default class FlashsaleService {
             //     );
             // }
 
+            // Flashsale active is on the queue early access time with HH:MM AM/PM format
+
+            // Convert HH:MM AM/PM to 24-hour format and create timestamps
+            const convertTimeToTimestamp = (date: string, time: string): Date => {
+                // Parse time format like "10:30 AM" or "02:15 PM"
+                const [timePart, period] = time.split(' ');
+                const [hours, minutes] = timePart.split(':').map(Number);
+
+                // Convert to 24-hour format
+                let hour24 = hours;
+                if (period === 'PM' && hours !== 12) {
+                    hour24 = hours + 12;
+                } else if (period === 'AM' && hours === 12) {
+                    hour24 = 0;
+                }
+
+                // Create date object with proper timezone handling
+                const dateTime = new Date(
+                    `${date}T${hour24.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`
+                );
+                return dateTime;
+            };
+
+            const flashsale_active_utc = convertTimeToTimestamp(date, queue_early_access_time);
+            const flashsale_start_utc = convertTimeToTimestamp(date, start_time);
+            const flashsale_end_utc = convertTimeToTimestamp(date, end_time);
+            const flashsale_inactive_utc = flashsale_end_utc; // Use end time as inactive time
+
+            console.log('\n\t\tActive UTC:', flashsale_active_utc);
+            console.log('\t\tInactive UTC:', flashsale_inactive_utc);
+
             // Create flashsale within transaction
             const flashsaleId = uuid.v4();
             const newFlashsale = await models.flashsales.create(
@@ -149,6 +184,8 @@ export default class FlashsaleService {
                     start_time,
                     end_time,
                     queue_early_access_time,
+                    flashsale_active_utc,
+                    flashsale_inactive_utc,
                 },
                 { transaction }
             );
@@ -158,7 +195,7 @@ export default class FlashsaleService {
 
             // Validate all products exist before creating flashsale_products
 
-            if(products) {
+            if (products) {
                 const productValidations = await Promise.all(
                     products.map(async (product) => {
                         const productData = await models.products.findOne({
@@ -273,13 +310,17 @@ export default class FlashsaleService {
                 return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Fields are required');
             }
 
-            // Validate start_time and end_time format is HH:MM:SS AM/PM
-            const timeRegex = /^(0[1-9]|1[0-2]):[0-5][0-5] (AM|PM)$/;
-            if (!timeRegex.test(start_time) || !timeRegex.test(end_time) || !timeRegex.test(queue_early_access_time)) {
+            // Validate start_time and end_time format is HH:MM AM/PM
+            const timeRegex = /^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/;
+            if (
+                !timeRegex.test(start_time) ||
+                !timeRegex.test(end_time) ||
+                !timeRegex.test(queue_early_access_time)
+            ) {
                 await transaction.rollback();
                 return responseHandler.returnError(
                     httpStatus.BAD_REQUEST,
-                    'Start time and end time must be in HH:MM AM/PM format'
+                    'Start time, end time, and queue early access time must be in HH:MM AM/PM format'
                 );
             }
 
@@ -308,12 +349,43 @@ export default class FlashsaleService {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, 'Flash Sale Not Found');
             }
 
+            // Convert HH:MM AM/PM to 24-hour format and create timestamps
+            const convertTimeToTimestamp = (date: string, time: string): Date => {
+                // Parse time format like "10:30 AM" or "02:15 PM"
+                const [timePart, period] = time.split(' ');
+                const [hours, minutes] = timePart.split(':').map(Number);
+
+                // Convert to 24-hour format
+                let hour24 = hours;
+                if (period === 'PM' && hours !== 12) {
+                    hour24 = hours + 12;
+                } else if (period === 'AM' && hours === 12) {
+                    hour24 = 0;
+                }
+
+                // Create date object with proper timezone handling
+                const dateTime = new Date(
+                    `${date}T${hour24.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`
+                );
+                return dateTime;
+            };
+
+            const flashsale_active_utc = convertTimeToTimestamp(date, queue_early_access_time);
+            const flashsale_start_utc = convertTimeToTimestamp(date, start_time);
+            const flashsale_end_utc = convertTimeToTimestamp(date, end_time);
+            const flashsale_inactive_utc = flashsale_end_utc; // Use end time as inactive time
+
+            console.log('\n\t\tActive UTC:', flashsale_active_utc);
+            console.log('\t\tInactive UTC:', flashsale_inactive_utc);
+
             // Update flashsale within transaction
             flashsale.name = name;
             flashsale.date = date;
             flashsale.start_time = start_time;
             flashsale.end_time = end_time;
             flashsale.queue_early_access_time = queue_early_access_time;
+            flashsale.flashsale_active_utc = flashsale_active_utc;
+            flashsale.flashsale_inactive_utc = flashsale_inactive_utc;
 
             await flashsale.save({ transaction });
 
@@ -321,8 +393,7 @@ export default class FlashsaleService {
             console.log('Products to be updated:', products);
 
             // Validate all products exist before updating flashsale_products
-
-            if (products){
+            if (products) {
                 const productValidations = await Promise.all(
                     products.map(async (product) => {
                         const productData = await models.products.findOne({
@@ -332,11 +403,11 @@ export default class FlashsaleService {
                             },
                             transaction,
                         });
-    
+
                         if (!productData) {
                             throw new Error(`Product with ID ${product.id} not found in booth`);
                         }
-    
+
                         return {
                             productData,
                             flashsale_price: product.flashsale_price || productData.price, // Use provided flashsale price or original price
@@ -353,7 +424,7 @@ export default class FlashsaleService {
                             },
                             transaction,
                         });
-    
+
                         if (flashsaleProduct) {
                             flashsaleProduct.flashsale_price = flashsale_price;
                             await flashsaleProduct.save({ transaction });

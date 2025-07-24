@@ -7,21 +7,25 @@ const router = Router();
 
 const queueController = new QueueController();
 
-// router.get(
-//     '/', 
-//     auth(),
-//     queueController.getFlashSaleList
-// );
+router.post(
+    '/', 
+    auth(),
+    queueController.nextQueue
+);
+
+router.get(
+    '/booth',
+    auth(),
+    queueController.getBoothQueue
+)
 
 router.post(
     '/:id',
-    auth(),
     queueController.createQueue
 );
 
 router.get(
     '/:deviceId',
-    auth(),
     queueController.getQueueByDeviceId
 );
 
