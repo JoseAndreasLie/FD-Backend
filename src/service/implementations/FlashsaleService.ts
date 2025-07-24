@@ -274,12 +274,12 @@ export default class FlashsaleService {
             }
 
             // Validate start_time and end_time format is HH:MM:SS AM/PM
-            const timeRegex = /^(0[1-9]|1[0-2]):[0-5][0-5]:[0-5][0-9] (AM|PM)$/;
-            if (!timeRegex.test(start_time) || !timeRegex.test(end_time)) {
+            const timeRegex = /^(0[1-9]|1[0-2]):[0-5][0-5] (AM|PM)$/;
+            if (!timeRegex.test(start_time) || !timeRegex.test(end_time) || !timeRegex.test(queue_early_access_time)) {
                 await transaction.rollback();
                 return responseHandler.returnError(
                     httpStatus.BAD_REQUEST,
-                    'Start time and end time must be in HH:MM:SS AM/PM format'
+                    'Start time and end time must be in HH:MM AM/PM format'
                 );
             }
 
