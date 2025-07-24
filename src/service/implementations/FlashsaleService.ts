@@ -321,55 +321,58 @@ export default class FlashsaleService {
             console.log('Products to be updated:', products);
 
             // Validate all products exist before updating flashsale_products
-            const productValidations = await Promise.all(
-                products.map(async (product) => {
-                    const productData = await models.products.findOne({
-                        where: {
-                            id: product.id,
-                            booth_id: userBooth.id,
-                        },
-                        transaction,
-                    });
 
-                    if (!productData) {
-                        throw new Error(`Product with ID ${product.id} not found in booth`);
-                    }
-
-                    return {
-                        productData,
-                        flashsale_price: product.flashsale_price || productData.price, // Use provided flashsale price or original price
-                    };
-                })
-            );
-            // Update flashsale_products within transaction
-            await Promise.all(
-                productValidations.map(async ({ productData, flashsale_price }) => {
-                    const flashsaleProduct = await models.flashsale_products.findOne({
-                        where: {
-                            flashsale_id: flashsale.id,
-                            product_id: productData.id,
-                        },
-                        transaction,
-                    });
-
-                    if (flashsaleProduct) {
-                        flashsaleProduct.flashsale_price = flashsale_price;
-                        await flashsaleProduct.save({ transaction });
-                    } else {
-                        // If the product does not exist in the flash sale, create it
-                        await models.flashsale_products.create(
-                            {
-                                id: uuid.v4(),
+            if (products){
+                const productValidations = await Promise.all(
+                    products.map(async (product) => {
+                        const productData = await models.products.findOne({
+                            where: {
+                                id: product.id,
+                                booth_id: userBooth.id,
+                            },
+                            transaction,
+                        });
+    
+                        if (!productData) {
+                            throw new Error(`Product with ID ${product.id} not found in booth`);
+                        }
+    
+                        return {
+                            productData,
+                            flashsale_price: product.flashsale_price || productData.price, // Use provided flashsale price or original price
+                        };
+                    })
+                );
+                // Update flashsale_products within transaction
+                await Promise.all(
+                    productValidations.map(async ({ productData, flashsale_price }) => {
+                        const flashsaleProduct = await models.flashsale_products.findOne({
+                            where: {
                                 flashsale_id: flashsale.id,
                                 product_id: productData.id,
-                                is_sold_out: false,
-                                flashsale_price,
                             },
-                            { transaction }
-                        );
-                    }
-                })
-            );
+                            transaction,
+                        });
+    
+                        if (flashsaleProduct) {
+                            flashsaleProduct.flashsale_price = flashsale_price;
+                            await flashsaleProduct.save({ transaction });
+                        } else {
+                            // If the product does not exist in the flash sale, create it
+                            await models.flashsale_products.create(
+                                {
+                                    id: uuid.v4(),
+                                    flashsale_id: flashsale.id,
+                                    product_id: productData.id,
+                                    is_sold_out: false,
+                                    flashsale_price,
+                                },
+                                { transaction }
+                            );
+                        }
+                    })
+                );
+            }
             // Commit the transaction
             await transaction.commit();
             return responseHandler.returnSuccess(

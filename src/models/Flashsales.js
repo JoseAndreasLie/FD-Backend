@@ -15,13 +15,7 @@ module.exports = (sequelize, DataTypes) => {
             //     as: 'flashsale_product', // Use a unique alias for the association
             // });
 
-            Flashsales.belongsToMany(models.products, {
-                through: models.flashsale_products,
-                foreignKey: 'flashsale_id',
-                otherKey: 'product_id',
-                as: 'products', // Use unique alias for the association
-            })
-
+            
             // // Many-to-many relationship with products through flashsale_products
             // Flashsales.belongsToMany(models.products, {
             //     through: models.flashsale_products,
@@ -29,6 +23,13 @@ module.exports = (sequelize, DataTypes) => {
             //     otherKey: 'product_id',
             //     as: 'product', // Use unique alias
             // });
+                
+            Flashsales.belongsToMany(models.products, {
+                through: models.flashsale_products,
+                foreignKey: 'flashsale_id',
+                otherKey: 'product_id',
+                as: 'products', // Use unique alias for the association
+            })
 
             // Association with booth
             Flashsales.belongsTo(models.booths, {
