@@ -17,6 +17,15 @@ module.exports = {
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             },
+            flashsale_id: {
+                type: Sequelize.UUID,
+                references: {
+                    model: 'flashsales',
+                    key: 'id',
+                },
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            },
             current_queue_number: {
                 type: Sequelize.INTEGER,
             },

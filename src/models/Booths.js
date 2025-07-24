@@ -22,6 +22,15 @@ module.exports = (sequelize, DataTypes) => {
     Booths.init(
         {
             name: DataTypes.STRING,
+            user_id: {
+                type: DataTypes.UUID,
+                references: {
+                    model: 'users',
+                    key: 'id',
+                },
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            },
         },
         {
             sequelize,
