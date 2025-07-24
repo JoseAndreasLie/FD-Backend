@@ -19,11 +19,11 @@ router.post(
     queueController.createQueue
 );
 
-// router.get(
-//     '/:queueId',
-//     auth(),
-//     queueController.getFlashSaleById
-// );
+router.get(
+    '/:deviceId',
+    auth(),
+    queueController.getQueueByDeviceId
+);
 
 // router.put(
 //     '/:queueId',

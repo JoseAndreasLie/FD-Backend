@@ -15,12 +15,18 @@ module.exports = (sequelize, DataTypes) => {
             });
             QueueEntryProducts.belongsTo(models.products, {
                 foreignKey: 'product_id',
-                as: 'product',  
+                as: 'product',
             });
         }
     }
     QueueEntryProducts.init(
         {
+            id: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
+                primaryKey: true,
+                allowNull: false,
+            },
             queue_entry_id: DataTypes.UUID,
             product_id: DataTypes.UUID,
             quantity: DataTypes.INTEGER,

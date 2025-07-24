@@ -15,6 +15,12 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: 'product_id',
                 as: 'products',
             })
+            QueueEntries.belongsTo(models.flashsales, {
+                foreignKey: 'flashsale_id',
+                as: 'flashsale',
+            });
+
+            
         }
     }
     QueueEntries.init(

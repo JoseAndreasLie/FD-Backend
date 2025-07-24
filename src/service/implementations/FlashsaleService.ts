@@ -88,12 +88,12 @@ export default class FlashsaleService {
             }
 
             // Validate start_time and end_time format is HH:MM:SS AM/PM
-            const timeRegex = /^(0[1-9]|1[0-2]):[0-5][0-9]:[0-5][0-9] (AM|PM)$/;
-            if (!timeRegex.test(start_time) || !timeRegex.test(end_time)) {
+            const timeRegex = /^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/;
+            if (!timeRegex.test(start_time) || !timeRegex.test(end_time) || !timeRegex.test(queue_early_access_time)) {
                 await transaction.rollback();
                 return responseHandler.returnError(
                     httpStatus.BAD_REQUEST,
-                    'Start time and end time must be in HH:MM:SS AM/PM format'
+                    'Start time, end time, and queue early access time must be in HH:MM AM/PM format'
                 );
             }
 
@@ -157,42 +157,45 @@ export default class FlashsaleService {
             console.log('Products to be added:', products);
 
             // Validate all products exist before creating flashsale_products
-            const productValidations = await Promise.all(
-                products.map(async (product) => {
-                    const productData = await models.products.findOne({
-                        where: {
-                            id: product.id,
-                            booth_id: userBooth.id,
-                        },
-                        transaction,
-                    });
 
-                    if (!productData) {
-                        throw new Error(`Product with ID ${product.id} not found in booth`);
-                    }
+            if(products) {
+                const productValidations = await Promise.all(
+                    products.map(async (product) => {
+                        const productData = await models.products.findOne({
+                            where: {
+                                id: product.id,
+                                booth_id: userBooth.id,
+                            },
+                            transaction,
+                        });
 
-                    return {
-                        productData,
-                        flashsale_price: product.flashsale_price || productData.price, // Use provided flashsale price or original price
-                    };
-                })
-            );
+                        if (!productData) {
+                            throw new Error(`Product with ID ${product.id} not found in booth`);
+                        }
 
-            // Create flashsale_products within transaction
-            await Promise.all(
-                productValidations.map(async ({ productData, flashsale_price }) => {
-                    await models.flashsale_products.create(
-                        {
-                            // Don't set id - let it auto-increment
-                            id: uuid.v4(),
-                            flashsale_id: flashsaleId,
-                            product_id: productData.id,
-                            is_sold_out: false,
-                        },
-                        { transaction }
-                    );
-                })
-            );
+                        return {
+                            productData,
+                            flashsale_price: product.flashsale_price || productData.price, // Use provided flashsale price or original price
+                        };
+                    })
+                );
+
+                // Create flashsale_products within transaction
+                await Promise.all(
+                    productValidations.map(async ({ productData, flashsale_price }) => {
+                        await models.flashsale_products.create(
+                            {
+                                // Don't set id - let it auto-increment
+                                id: uuid.v4(),
+                                flashsale_id: flashsaleId,
+                                product_id: productData.id,
+                                is_sold_out: false,
+                            },
+                            { transaction }
+                        );
+                    })
+                );
+            }
 
             // Commit the transaction
             await transaction.commit();
@@ -384,8 +387,7 @@ export default class FlashsaleService {
 
     deleteFlashSale = async (params, userInfo) => {
         try {
-
-            console.log("\n\n", params, userInfo);
+            console.log('\n\n', params, userInfo);
 
             const userBooth = await models.booths.findOne({
                 where: {
@@ -423,16 +425,13 @@ export default class FlashsaleService {
                     id: flashsale.id,
                     booth_id: userBooth.id,
                     deleted_at: null,
-                }
-            })
+                },
+            });
 
-            return responseHandler.returnSuccess(
-                httpStatus.OK,
-                'Flash Sale Deleted Successfully',
-            );
+            return responseHandler.returnSuccess(httpStatus.OK, 'Flash Sale Deleted Successfully');
         } catch (e) {
             logger.error(e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, 'Something Went Wrong!!');
         }
-    }
+    };
 }

@@ -25,4 +25,17 @@ export default class QueueController {
             res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
+
+    getQueueByDeviceId = async (req: Request, res: Response) => {
+        try {
+            const queueResponse: ApiServiceResponse = await this.queueService.getQueueByDeviceId(
+                req.params.deviceId
+            );
+            const { code, message, data } = queueResponse.response;
+            res.status(queueResponse.statusCode).send({ code, message, data });
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
 }
