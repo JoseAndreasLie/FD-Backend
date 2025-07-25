@@ -1,5 +1,5 @@
 {
-    "name": "Typescript-Express-Postgresql-Boilerplate",
+    "name": "Q-in Aja",
     "version": "1.0.0",
     "description": "Boilerplate for Node-Express with sequelize ORM",
     "main": "build/index.js",
@@ -9,7 +9,7 @@
         "start": "npm run build && node build/index.js",
         "test": "mocha -r ts-node/register './specs/**/*.spec.ts' --watch --watch-files './specs/**/*.spec.ts'"
     },
-    "author": "Q-in Aja",
+    "author": "Jose Andreas Lie",
     "license": "MIT",
     "devDependencies": {
         "@types/express": "^4.17.17",
