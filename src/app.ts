@@ -33,7 +33,7 @@ app.get('/api/v1/test', async (req, res) => {
 });
 
 app.get('/api/v1/version', async (req, res) => {
-    res.status(200).send('Version Beta 1.0.0');
+    res.status(200).send('Version 1.0.0-beta');
 });
 
 app.use('/api/v1', routes);
