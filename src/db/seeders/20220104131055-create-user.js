@@ -1,24 +1,36 @@
-// const { v4: uuidv4 } = require('uuid');
-// const bcrypt = require('bcryptjs');
+const { v4: uuidv4 } = require('uuid');
+const bcrypt = require('bcryptjs');
 
-// module.exports = {
-//     up: async (queryInterface, Sequelize) => {
-//         return queryInterface.bulkInsert('users', [
-//             {
-//                 uuid: uuidv4(),
-//                 first_name: 'John',
-//                 last_name: 'Doe',
-//                 email: 'user@example.com',
-//                 status: 1,
-//                 email_verified: 1,
-//                 password: bcrypt.hashSync('123456', 8),
-//                 created_at: new Date(),
-//                 updated_at: new Date(),
-//             },
-//         ]);
-//     },
+module.exports = {
+    up: async (queryInterface, Sequelize) => {
+        // Create the user first
+        const userId = uuidv4();
 
-//     down: async (queryInterface, Sequelize) => {
-//         return queryInterface.bulkDelete('users', null, {});
-//     },
-// };
+        await queryInterface.bulkInsert('users', [
+            {
+                id: userId,
+                username: 'Cantika',
+                email: 'cantika@gmail.com',
+                password: bcrypt.hashSync('123456', 10),
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+        ]);
+
+        // Create booths for the user
+        return queryInterface.bulkInsert('booths', [
+            {
+                id: uuidv4(),
+                name: "Cantika's Fashion Booth",
+                user_id: userId,
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+        ]);
+    },
+
+    down: async (queryInterface, Sequelize) => {
+        await queryInterface.bulkDelete('booths', null, {});
+        return queryInterface.bulkDelete('users', null, {});
+    },
+};

@@ -44,7 +44,7 @@ export default class RedisService implements IRedisService {
     };
 
     setUser = async (user: IUser) => {
-        const setUser = await this.redisHelper.set(`user:${user.uuid}`, JSON.stringify(user));
+        const setUser = await this.redisHelper.set(`user:${user.id}`, JSON.stringify(user));
         if (!setUser) {
             return true;
         }

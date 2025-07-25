@@ -1,18 +1,17 @@
+'use strict';
 const { Model } = require('sequelize');
-
 module.exports = (sequelize, DataTypes) => {
-    class User extends Model {
+    class QueueStatuses extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-            // define association here
+        // define association here
         }
     }
-
-    User.init(
+    QueueStatuses.init(
         {
             id: {
                 type: DataTypes.UUID,
@@ -20,18 +19,19 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 allowNull: false,
             },
-            username: DataTypes.STRING,
-            email: DataTypes.STRING,
-            password: DataTypes.STRING,
+            booth_id: DataTypes.UUIDV4,
+            flashsale_id: DataTypes.UUIDV4,
+            current_queue_number: DataTypes.INTEGER,
+            is_active: DataTypes.BOOLEAN,
         },
         {
             sequelize,
-            modelName: 'user',
+            modelName: 'queue_statuses',
             underscored: true,
             createdAt: 'created_at',
             updatedAt: 'updated_at',
             deletedAt: 'deleted_at',
-        },
+        }
     );
-    return User;
+    return QueueStatuses;
 };

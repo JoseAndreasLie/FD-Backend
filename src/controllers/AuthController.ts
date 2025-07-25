@@ -7,6 +7,9 @@ import { IUser } from '../models/interfaces/IUser';
 import AuthService from '../service/implementations/AuthService';
 import TokenService from '../service/implementations/TokenService';
 import UserService from '../service/implementations/UserService';
+import responseHandler from '../helper/responseHandler';
+import ApiError from '../helper/ApiError';
+import { responseMessageConstant } from '../config/constant';
 
 export default class AuthController {
     private userService: UserService;
@@ -21,31 +24,31 @@ export default class AuthController {
         this.authService = new AuthService();
     }
 
-    register = async (req: Request, res: Response) => {
-        try {
-            const user: ApiServiceResponse = await this.userService.createUser(req.body);
-            let tokens = {};
-            const { status } = user.response;
-            if (user.response.status) {
-                tokens = await this.tokenService.generateAuthTokens(<IUser>user.response.data);
-            }
-            const { message, data } = user.response;
-            res.status(user.statusCode).send({ status, message, data, tokens });
-        } catch (e) {
-            logger.error(e);
-            res.status(httpStatus.BAD_GATEWAY).send(e);
-        }
-    };
+    // register = async (req: Request, res: Response) => {
+    //     try {
+    //         const user: ApiServiceResponse = await this.userService.createUser(req.body);
+    //         let tokens = {};
+    //         const { status } = user.response;
+    //         if (user.response.status) {
+    //             tokens = await this.tokenService.generateAuthToken(<IUser>user.response.data);
+    //         }
+    //         const { message, data } = user.response;
+    //         res.status(user.statusCode).send({ status, message, data, tokens });
+    //     } catch (e) {
+    //         logger.error(e);
+    //         res.status(httpStatus.BAD_GATEWAY).send(e);
+    //     }
+    // };
 
-    checkEmail = async (req: Request, res: Response) => {
-        try {
-            const isExists = await this.userService.isEmailExists(req.body.email.toLowerCase());
-            res.status(isExists.statusCode).send(isExists.response);
-        } catch (e) {
-            logger.error(e);
-            res.status(httpStatus.BAD_GATEWAY).send(e);
-        }
-    };
+    // checkEmail = async (req: Request, res: Response) => {
+    //     try {
+    //         const isExists = await this.userService.isEmailExists(req.body.email.toLowerCase());
+    //         res.status(isExists.statusCode).send(isExists.response);
+    //     } catch (e) {
+    //         logger.error(e);
+    //         res.status(httpStatus.BAD_GATEWAY).send(e);
+    //     }
+    // };
 
     login = async (req: Request, res: Response) => {
         try {
@@ -54,53 +57,95 @@ export default class AuthController {
                 email.toLowerCase(),
                 password
             );
-            const { message, data, status } = user.response;
+
+            const { message } = user.response;
+            const data = <IUser>user.response.data;
             const code = user.statusCode;
-            let tokens = {};
-            if (user.response.status) {
-                tokens = await this.tokenService.generateAuthTokens(<IUser>data);
+
+            if (code == 200 && data) {
+                const tokens = await this.tokenService.generateAuthToken(data.id);
+                return res.status(user.statusCode).send({ code, message, data, tokens });
             }
-            res.status(user.statusCode).send({ status, code, message, data, tokens });
+
+            return res.status(code).send({ code, message, data });
         } catch (e) {
             logger.error(e);
-            res.status(httpStatus.BAD_GATEWAY).send(e);
+            return res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
 
-    logout = async (req: Request, res: Response) => {
-        await this.authService.logout(req, res);
-        res.status(httpStatus.NO_CONTENT).send();
-    };
+    // logout = async (req: Request, res: Response) => {
+    //     await this.authService.logout(req, res);
+    //     res.status(httpStatus.NO_CONTENT).send();
+    // };
 
     refreshTokens = async (req: Request, res: Response) => {
         try {
-            const refreshTokenDoc = await this.tokenService.verifyToken(
-                req.body.refresh_token,
-                tokenTypes.REFRESH
-            );
-            const user = await this.userService.getUserByUuid(refreshTokenDoc.user_uuid);
-            if (user == null) {
-                res.status(httpStatus.BAD_GATEWAY).send('User Not Found!');
+            const refreshToken = req.body.refresh_token;
+            if (!refreshToken) {
+                throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid refresh token format');
             }
-            if (refreshTokenDoc.id === undefined) {
-                return res.status(httpStatus.BAD_GATEWAY).send('Bad Request!');
+
+            const payload = await this.tokenService.verifyToken(refreshToken);
+
+            if (payload.type !== tokenTypes.REFRESH) {
+                throw new ApiError(
+                    httpStatus.UNAUTHORIZED,
+                    responseMessageConstant.TOKEN_400_INVALID
+                );
             }
-            await this.tokenService.removeTokenById(refreshTokenDoc.id);
-            const tokens = await this.tokenService.generateAuthTokens(user);
-            res.send(tokens);
-        } catch (e) {
-            logger.error(e);
-            res.status(httpStatus.BAD_GATEWAY).send(e);
+
+            const user = await req.userInfo;
+
+            if (!user) {
+                throw new ApiError(httpStatus.UNAUTHORIZED, 'User not found');
+            }
+
+            const accessToken = await this.tokenService.generateAccessToken(user.id);
+
+            if (!accessToken) {
+                throw new ApiError(
+                    httpStatus.UNAUTHORIZED,
+                    responseMessageConstant.TOKEN_401_EXPIRED
+                );
+            }
+
+            const decoded = await this.tokenService.verifyToken(accessToken);
+            const exp = new Date(decoded.exp).toString();
+
+            return res.status(httpStatus.OK).json({
+                code: httpStatus.OK,
+                message: responseMessageConstant.TOKEN_200_REFRESHED,
+                data: {
+                    access: {
+                        token: accessToken,
+                        expires: exp,
+                    },
+                },
+            });
+        } catch (error) {
+            if (error instanceof ApiError) {
+                return res.status(error.statusCode).json({
+                    code: error.statusCode,
+                    message: error.message,
+                });
+            }
+
+            logger.error(error);
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+                code: httpStatus.INTERNAL_SERVER_ERROR,
+                message: 'Internal server error',
+            });
         }
     };
 
-    changePassword = async (req: Request, res: Response) => {
-        try {
-            const responseData = await this.userService.changePassword(req);
-            res.status(responseData.statusCode).send(responseData.response);
-        } catch (e) {
-            logger.error(e);
-            res.status(httpStatus.BAD_GATEWAY).send(e);
-        }
-    };
+    // changePassword = async (req: Request, res: Response) => {
+    //     try {
+    //         const responseData = await this.userService.changePassword(req);
+    //         res.status(responseData.statusCode).send(responseData.response);
+    //     } catch (e) {
+    //         logger.error(e);
+    //         res.status(httpStatus.BAD_GATEWAY).send(e);
+    //     }
+    // };
 }

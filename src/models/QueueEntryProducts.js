@@ -1,7 +1,7 @@
+'use strict';
 const { Model } = require('sequelize');
-
 module.exports = (sequelize, DataTypes) => {
-    class User extends Model {
+    class QueueEntryProducts extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -9,29 +9,36 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            QueueEntryProducts.belongsTo(models.queue_entries, {
+                foreignKey: 'queue_entry_id',
+                as: 'queue_entry',
+            });
+            QueueEntryProducts.belongsTo(models.products, {
+                foreignKey: 'product_id',
+                as: 'product',
+            });
         }
     }
-
-    User.init(
+    QueueEntryProducts.init(
         {
             id: {
                 type: DataTypes.UUID,
-                defaultValue: DataTypes.UUIDV4, 
+                defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
                 allowNull: false,
             },
-            username: DataTypes.STRING,
-            email: DataTypes.STRING,
-            password: DataTypes.STRING,
+            queue_entry_id: DataTypes.UUID,
+            product_id: DataTypes.UUID,
+            quantity: DataTypes.INTEGER,
         },
         {
             sequelize,
-            modelName: 'user',
+            modelName: 'queue_entry_products',
             underscored: true,
             createdAt: 'created_at',
             updatedAt: 'updated_at',
             deletedAt: 'deleted_at',
-        },
+        }
     );
-    return User;
+    return QueueEntryProducts;
 };

@@ -32,6 +32,10 @@ app.get('/api/v1/test', async (req, res) => {
     res.status(200).send('Congratulations! API is working!');
 });
 
+app.get('/api/v1/version', async (req, res) => {
+    res.status(200).send('Version 1.0.0-beta');
+});
+
 app.use('/api/v1', routes);
 
 // send back a 404 error for any unknown api request
