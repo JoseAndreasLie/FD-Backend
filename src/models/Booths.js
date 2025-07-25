@@ -9,10 +9,6 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            // Booths.belongsTo(models.brands, {
-            //     foreignKey: 'brand_id',
-            //     as: 'brand',
-            // });
             Booths.hasMany(models.flashsales, {
                 foreignKey: 'booth_id',
                 as: 'flashsales',
@@ -21,6 +17,12 @@ module.exports = (sequelize, DataTypes) => {
     }
     Booths.init(
         {
+            id: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4, 
+                primaryKey: true,
+                allowNull: false,
+            },
             name: DataTypes.STRING,
             description: DataTypes.STRING,
             img_url: DataTypes.STRING,

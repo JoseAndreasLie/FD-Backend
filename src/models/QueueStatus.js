@@ -13,6 +13,12 @@ module.exports = (sequelize, DataTypes) => {
     }
     QueueStatuses.init(
         {
+            id: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4, 
+                primaryKey: true,
+                allowNull: false,
+            },
             booth_id: DataTypes.UUIDV4,
             flashsale_id: DataTypes.UUIDV4,
             current_queue_number: DataTypes.INTEGER,

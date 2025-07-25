@@ -19,18 +19,16 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'flashsale_id',
                 as: 'flashsale',
             });
-            // QueueEntries.belongsTo(models.queue_entry_products, {
-            //     foreignKey: 'queue_entry_id',
-            //     as: 'queue_entry_products',
-            // });
-            // QueueEntries.belongsTo(models.booths, {
-            //     foreignKey: 'booth_id',
-            //     as: 'booth',
-            // });
         }
     }
     QueueEntries.init(
         {
+            id: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4, 
+                primaryKey: true,
+                allowNull: false,
+            },
             device_id: DataTypes.STRING,
             booth_id: DataTypes.UUIDV4,
             flashsale_id: DataTypes.UUIDV4,

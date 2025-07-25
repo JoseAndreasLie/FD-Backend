@@ -8,22 +8,6 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-            // define association here
-            // Products.belongsTo(models.brands, {
-            //     foreignKey: 'brand_id',
-            //     as: 'brand',
-            // });
-            // Products.belongsTo(models.booths, {
-            //     foreignKey: 'booth_id',
-            //     // as: 'booth',
-            // });
-
-            // // Association with flashsale_products
-            // Products.hasMany(models.flashsale_products, {
-            //     foreignKey: 'product_id',
-            //     as: 'flashsale_product',
-            // });
-
             // // Many-to-many relationship with flashsales
             Products.belongsToMany(models.flashsales, {
                 through: models.flashsale_products,
@@ -42,6 +26,12 @@ module.exports = (sequelize, DataTypes) => {
     }
     Products.init(
         {
+            id: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4, 
+                primaryKey: true,
+                allowNull: false,
+            },
             name: DataTypes.STRING,
             img_url: DataTypes.STRING,
             // brand_id: DataTypes.UUIDV4,

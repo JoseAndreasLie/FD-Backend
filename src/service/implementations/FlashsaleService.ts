@@ -57,10 +57,6 @@ export default class FlashsaleService {
 
                 return {
                     ...flashsale.toJSON(),
-                    // date: startDate, // "8/22/2025"
-                    // start_time: startTime, // "11:00:00 AM"
-                    // end_time: endTime, // "1:00:00 PM"
-                    // queue_early_access_time: queueTime, // "10:00:00 AM"
                 };
             });
 
@@ -96,6 +92,14 @@ export default class FlashsaleService {
                     },
                 ],
             });
+
+            if (!flashSaleList || flashSaleList.length === 0) {
+                return responseHandler.returnError(
+                    httpStatus.NOT_FOUND,
+                    'No Flash Sales Found'
+                );
+            }
+
             return responseHandler.returnSuccess(
                 httpStatus.OK,
                 'Flash Sale List Retrieved',
@@ -144,36 +148,6 @@ export default class FlashsaleService {
                 );
             }
 
-            // // Create datetime in GMT+7 by subtracting 7 hours from UTC
-            // const startDateTimeUTC = new Date(`${date}T${start_time}:00.000Z`);
-            // const endDateTimeUTC = new Date(`${date}T${end_time}:00.000Z`);
-            // const earlyDateTimeUTC = new Date(`${date}T${queue_early_access_time}:00.000Z`);
-
-            // // Subtract 7 hours to get the correct UTC time that represents GMT+7
-            // const startDateTime = new Date(startDateTimeUTC.getTime() - 7 * 60 * 60 * 1000);
-            // const endDateTime = new Date(endDateTimeUTC.getTime() - 7 * 60 * 60 * 1000);
-            // const earlyAccessTime = new Date(earlyDateTimeUTC.getTime() - 7 * 60 * 60 * 1000);
-
-            // Validate that end time is after start time
-            // if (endDateTime <= startDateTime) {
-            //     await transaction.rollback();
-            //     return responseHandler.returnError(
-            //         httpStatus.BAD_REQUEST,
-            //         'End time must be after start time'
-            //     );
-            // }
-
-            // Validate that early access time is before start time
-            // if (earlyAccessTime >= startDateTime) {
-            //     await transaction.rollback();
-            //     return responseHandler.returnError(
-            //         httpStatus.BAD_REQUEST,
-            //         'Early access time must be before start time'
-            //     );
-            // }
-
-            // Flashsale active is on the queue early access time with HH:MM AM/PM format
-
             // Convert HH:MM AM/PM to 24-hour format and create timestamps
             const convertTimeToTimestamp = (date: string, time: string): Date => {
                 // Parse time format like "10:30 AM" or "02:15 PM"
@@ -196,7 +170,6 @@ export default class FlashsaleService {
             };
 
             const flashsale_active_utc = convertTimeToTimestamp(date, queue_early_access_time);
-            const flashsale_start_utc = convertTimeToTimestamp(date, start_time);
             const flashsale_end_utc = convertTimeToTimestamp(date, end_time);
             const flashsale_inactive_utc = flashsale_end_utc; // Use end time as inactive time
 
@@ -295,9 +268,6 @@ export default class FlashsaleService {
                     booth_id: userBooth.id,
                     deleted_at: null,
                 },
-                // attributes: {
-                //     exclude: ['created_at', 'updated_at', 'deleted_at'],
-                // }
                 include: [
                     {
                         model: models.products,
@@ -504,10 +474,6 @@ export default class FlashsaleService {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, 'Flash Sale Not Found');
             }
 
-            // Soft delete the flash sale
-            // flashsale.deleted_at = new Date();
-            // await flashsale.save();
-
             await models.flashsales.destroy({
                 where: {
                     id: flashsale.id,
@@ -519,6 +485,7 @@ export default class FlashsaleService {
             return responseHandler.returnSuccess(httpStatus.OK, 'Flash Sale Deleted Successfully');
         } catch (e) {
             logger.error(e);
+            console.log("\n\nError\n", e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, 'Something Went Wrong!!');
         }
     };

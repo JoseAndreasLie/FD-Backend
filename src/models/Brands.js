@@ -9,14 +9,16 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            // Brands.hasMany(models.booths, {
-            //     foreignKey: 'brand_id',
-            //     as: 'booths',
-            // });
         }
     }
     Brands.init(
         {
+            id: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4, 
+                primaryKey: true,
+                allowNull: false,
+            },
             name: DataTypes.STRING,
         },
         {

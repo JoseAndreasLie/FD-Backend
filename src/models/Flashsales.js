@@ -40,6 +40,12 @@ module.exports = (sequelize, DataTypes) => {
     }
     Flashsales.init(
         {
+            id: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4, 
+                primaryKey: true,
+                allowNull: false,
+            },
             name: DataTypes.STRING,
             // brand_id: {
             //     type: DataTypes.STRING,
