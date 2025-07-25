@@ -4,6 +4,7 @@ import flashsaleRoute from './flashsaleRoute';
 import productRoute from './productRoute';
 import boothRoute from './boothRoute';
 import queueRoute from './queueRoute';
+import userRoute from './userRoute';
 import path from 'path';
 
 const router = Router();
@@ -28,6 +29,10 @@ const defaultRoutes = [
     {
         path: '/queue',
         route: queueRoute,
+    },
+    {
+        path: '/user',
+        route: userRoute,
     }
 ];
 

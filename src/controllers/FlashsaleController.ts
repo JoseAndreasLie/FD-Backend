@@ -83,4 +83,25 @@ export default class FlashsaleController {
             res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
+
+
+
+    // ** USER USER USER USER USER USER USER USER USER  ** //
+    getListOfFlashSales = async (req: Request, res: Response) => {
+        try {
+            let boothId = req.params.boothId;
+            const booth = {
+                id : boothId,
+            }
+
+            const flashSaleList: ApiServiceResponse = await this.flashsaleService.getFlashSaleListUser(
+                booth
+            );
+            const { code, message, data } = flashSaleList.response;
+            res.status(flashSaleList.statusCode).send({ code, message, data });
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    }
 }

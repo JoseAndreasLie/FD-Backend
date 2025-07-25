@@ -23,7 +23,7 @@ export default class BoothService {
             return responseHandler.returnSuccess(
                 httpStatus.OK,
                 'Booth Name Retrieved Successfully',
-                { name: userBooth.name }
+                userBooth
             );
         } catch (e) {
             logger.error(e);
@@ -67,6 +67,30 @@ export default class BoothService {
                 httpStatus.OK,
                 'Booth Updated Successfully',
                 boothData
+            );
+        } catch (e) {
+            logger.error(e);
+            return responseHandler.returnError(httpStatus.BAD_GATEWAY, 'Something Went Wrong!!');
+        }
+    };
+
+    getBoothNameById = async (boothId) => {
+        try {
+            const Booth = await models.booths.findOne({
+                where: {
+                    id: boothId,
+                },
+            });
+            if (!Booth) {
+                return responseHandler.returnError(
+                    httpStatus.NOT_FOUND,
+                    'No Booth Found'
+                );
+            }
+            return responseHandler.returnSuccess(
+                httpStatus.OK,
+                'Booth Name Retrieved Successfully',
+                Booth
             );
         } catch (e) {
             logger.error(e);

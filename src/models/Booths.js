@@ -22,6 +22,9 @@ module.exports = (sequelize, DataTypes) => {
     Booths.init(
         {
             name: DataTypes.STRING,
+            description: DataTypes.STRING,
+            img_url: DataTypes.STRING,
+            location: DataTypes.STRING,
             user_id: {
                 type: DataTypes.UUID,
                 references: {

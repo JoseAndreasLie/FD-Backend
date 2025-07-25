@@ -19,16 +19,6 @@ router.get(
     queueController.getBoothQueue
 )
 
-router.post(
-    '/:id',
-    queueController.createQueue
-);
-
-router.get(
-    '/:deviceId',
-    queueController.getQueueByDeviceId
-);
-
 // router.put(
 //     '/:queueId',
 //     auth(),

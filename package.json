@@ -5,11 +5,11 @@
     "main": "build/index.js",
     "scripts": {
         "build": "rimraf ./build && tsc",
-        "start:dev": "nodemon",
+        "dev": "nodemon",
         "start": "npm run build && node build/index.js",
         "test": "mocha -r ts-node/register './specs/**/*.spec.ts' --watch --watch-files './specs/**/*.spec.ts'"
     },
-    "author": "Concise",
+    "author": "Q-in Aja",
     "license": "MIT",
     "devDependencies": {
         "@types/express": "^4.17.17",

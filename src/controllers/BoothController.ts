@@ -33,4 +33,16 @@ export default class BoothController {
             res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
+
+    getBoothNameById = async (req: Request, res: Response) => {
+        try {
+            const boothId = req.params.boothId;
+            const boothResponse: ApiServiceResponse = await this.boothService.getBoothNameById(boothId);
+            const { code, message, data } = boothResponse.response;
+            res.status(boothResponse.statusCode).send({ code, message, data });
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    }
 }

@@ -13,9 +13,10 @@ export default class QueueService {
         const transaction = await models.sequelize.transaction(); // Add transaction for consistency
 
         try {
+            console.log('\n\n\t\tCreating queue with body:\n', body, 'and params:', params);
             const flashsale = await models.flashsales.findOne({
                 where: {
-                    id: params.id,
+                    id: params.flashsaleId,
                     deleted_at: null,
                 },
                 transaction,

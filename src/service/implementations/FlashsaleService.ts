@@ -77,6 +77,39 @@ export default class FlashsaleService {
         }
     };
 
+    getFlashSaleListUser = async (booth) => {
+        try {
+            const flashSaleList = await models.flashsales.findAll({
+                where: {
+                    booth_id: booth.id,
+                    deleted_at: null,
+                },
+                order: [['name', 'ASC']],
+                attributes: {
+                    exclude: ['created_at', 'updated_at', 'deleted_at'],
+                },
+                include: [
+                    {
+                        model: models.products,
+                        as: 'products',
+                        through: {
+                            attributes: ['is_sold_out'],
+                        },
+                    },
+                ],
+            });
+            console.log('User Flash Sale List:', flashSaleList);
+            return responseHandler.returnSuccess(
+                httpStatus.OK,
+                'Flash Sale List Retrieved',
+                flashSaleList
+            );
+        } catch (e) {
+            logger.error(e);
+            return responseHandler.returnError(httpStatus.BAD_GATEWAY, 'Something Went Wrong!!');
+        }
+    };
+
     createFlashSale = async (body, userInfo) => {
         const transaction = await models.sequelize.transaction();
 
