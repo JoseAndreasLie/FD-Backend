@@ -55,7 +55,6 @@ export default class FlashsaleController {
 
     updateFlashSale = async (req: Request, res: Response) => {
         try {
-            console.log('\n\n', req.params, req.body);
             const flashSale: ApiServiceResponse = await this.flashsaleService.updateFlashSale(
                 req.params,
                 req.body,
@@ -71,7 +70,6 @@ export default class FlashsaleController {
 
     deleteFlashSale = async (req: Request, res: Response) => {
         try {
-            console.log('\n\n', req.params, req.body);
             const flashSale: ApiServiceResponse = await this.flashsaleService.deleteFlashSale(
                 req.params,
                 req.userInfo

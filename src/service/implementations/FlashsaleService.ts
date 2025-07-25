@@ -34,8 +34,6 @@ export default class FlashsaleService {
                 },
             });
 
-            console.log('User Flash Sale List:', userFlashSaleList);
-
             // Format the dates for display
             const formattedFlashSales = userFlashSaleList.map((flashsale) => {
                 const startTimeFormatted = flashsale.start_time.toLocaleString('en-US', {
@@ -98,7 +96,6 @@ export default class FlashsaleService {
                     },
                 ],
             });
-            console.log('User Flash Sale List:', flashSaleList);
             return responseHandler.returnSuccess(
                 httpStatus.OK,
                 'Flash Sale List Retrieved',
@@ -203,9 +200,6 @@ export default class FlashsaleService {
             const flashsale_end_utc = convertTimeToTimestamp(date, end_time);
             const flashsale_inactive_utc = flashsale_end_utc; // Use end time as inactive time
 
-            console.log('\n\t\tActive UTC:', flashsale_active_utc);
-            console.log('\t\tInactive UTC:', flashsale_inactive_utc);
-
             // Create flashsale within transaction
             const flashsaleId = uuid.v4();
             const newFlashsale = await models.flashsales.create(
@@ -222,9 +216,6 @@ export default class FlashsaleService {
                 },
                 { transaction }
             );
-
-            console.log('New Flashsale Created:', newFlashsale.toJSON());
-            console.log('Products to be added:', products);
 
             // Validate all products exist before creating flashsale_products
 
@@ -408,9 +399,6 @@ export default class FlashsaleService {
             const flashsale_end_utc = convertTimeToTimestamp(date, end_time);
             const flashsale_inactive_utc = flashsale_end_utc; // Use end time as inactive time
 
-            console.log('\n\t\tActive UTC:', flashsale_active_utc);
-            console.log('\t\tInactive UTC:', flashsale_inactive_utc);
-
             // Update flashsale within transaction
             flashsale.name = name;
             flashsale.date = date;
@@ -421,9 +409,6 @@ export default class FlashsaleService {
             flashsale.flashsale_inactive_utc = flashsale_inactive_utc;
 
             await flashsale.save({ transaction });
-
-            console.log('Flash Sale Updated:', flashsale.toJSON());
-            console.log('Products to be updated:', products);
 
             // Validate all products exist before updating flashsale_products
             if (products) {
@@ -494,8 +479,6 @@ export default class FlashsaleService {
 
     deleteFlashSale = async (params, userInfo) => {
         try {
-            console.log('\n\n', params, userInfo);
-
             const userBooth = await models.booths.findOne({
                 where: {
                     user_id: userInfo.id,
@@ -516,8 +499,6 @@ export default class FlashsaleService {
                     deleted_at: null,
                 },
             });
-
-            console.log('Flashsale to delete:', flashsale);
 
             if (!flashsale) {
                 return responseHandler.returnError(httpStatus.NOT_FOUND, 'Flash Sale Not Found');

@@ -13,7 +13,6 @@ export default class QueueService {
         const transaction = await models.sequelize.transaction(); // Add transaction for consistency
 
         try {
-            console.log('\n\n\t\tCreating queue with body:\n', body, 'and params:', params);
             const flashsale = await models.flashsales.findOne({
                 where: {
                     id: params.flashsaleId,
@@ -141,8 +140,6 @@ export default class QueueService {
                 order: [['flashsale_active_utc', 'ASC']],
             });
 
-            console.log('Flashsale:', flashsale);
-
             const queueStatus = await models.queue_statuses.findOne({
                 where: {
                     booth_id: booth.id,
@@ -166,7 +163,6 @@ export default class QueueService {
             });
 
             if (queue && queue.length > 0) {
-                console.log('Masuk mapping queue:', queue);
                 queue = queue.map((q) => ({
                     id: q.id,
                     ticket_code: q.ticket_code,
@@ -183,8 +179,6 @@ export default class QueueService {
 
             let currentQueueProducts = [];
 
-            console.log('Queue Status:', queueStatus);
-
             if (queueStatus !== 0) {
                 let currentQueueDetail = await models.queue_entries.findOne({
                     where: {
@@ -195,10 +189,6 @@ export default class QueueService {
                     },
                     order: [['created_at', 'DESC']],
                 });
-
-                console.log('Current Queue Detail:', currentQueueDetail);
-
-                // console.log('Current Queue Detail:', currentQueueDetail);
 
                 currentQueueProducts = await models.queue_entry_products.findAll({
                     where: {
@@ -241,8 +231,6 @@ export default class QueueService {
     };
 
     nextQueue = async (userInfo, flashsaleId) => {
-
-        console.log('Next Queue called with userInfo:', userInfo, 'and flashsaleId:', flashsaleId);
         try {
             const booth = await models.booths.findOne({
                 where: {
