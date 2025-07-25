@@ -27,7 +27,7 @@ router.get(
 );
 
 router.get(
-    '/booth/:boothId/flashsales',
+    '/booth/:boothId/flashsale',
     flashsaleController.getListOfFlashSales
 );
 
