@@ -86,18 +86,18 @@ export default class FlashsaleService {
                     {
                         model: models.products,
                         as: 'products',
+                        where: { deleted_at: null }, // Only include non-deleted products
                         through: {
                             attributes: ['is_sold_out'],
+                            where: { deleted_at: null }, // Only include non-deleted flashsale_products
                         },
+                        required: false, // Use LEFT JOIN to include flashsale even if no products
                     },
                 ],
             });
 
             if (!flashSaleList || flashSaleList.length === 0) {
-                return responseHandler.returnError(
-                    httpStatus.NOT_FOUND,
-                    'No Flash Sales Found'
-                );
+                return responseHandler.returnError(httpStatus.NOT_FOUND, 'No Flash Sales Found');
             }
 
             return responseHandler.returnSuccess(
@@ -274,6 +274,7 @@ export default class FlashsaleService {
                         as: 'products',
                         through: {
                             attributes: ['is_sold_out'],
+                            where: { deleted_at: null },
                         },
                     },
                 ],
@@ -345,11 +346,9 @@ export default class FlashsaleService {
 
             // Convert HH:MM AM/PM to 24-hour format and create timestamps
             const convertTimeToTimestamp = (date: string, time: string): Date => {
-                // Parse time format like "10:30 AM" or "02:15 PM"
                 const [timePart, period] = time.split(' ');
                 const [hours, minutes] = timePart.split(':').map(Number);
 
-                // Convert to 24-hour format
                 let hour24 = hours;
                 if (period === 'PM' && hours !== 12) {
                     hour24 = hours + 12;
@@ -357,7 +356,6 @@ export default class FlashsaleService {
                     hour24 = 0;
                 }
 
-                // Create date object with proper timezone handling
                 const dateTime = new Date(
                     `${date}T${hour24.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`
                 );
@@ -367,7 +365,7 @@ export default class FlashsaleService {
             const flashsale_active_utc = convertTimeToTimestamp(date, queue_early_access_time);
             const flashsale_start_utc = convertTimeToTimestamp(date, start_time);
             const flashsale_end_utc = convertTimeToTimestamp(date, end_time);
-            const flashsale_inactive_utc = flashsale_end_utc; // Use end time as inactive time
+            const flashsale_inactive_utc = flashsale_end_utc;
 
             // Update flashsale within transaction
             flashsale.name = name;
@@ -380,14 +378,28 @@ export default class FlashsaleService {
 
             await flashsale.save({ transaction });
 
-            // Validate all products exist before updating flashsale_products
-            if (products) {
+            // Step 1: Soft delete ALL existing flashsale_products for this flashsale
+            await models.flashsale_products.update(
+                { deleted_at: new Date() },
+                {
+                    where: {
+                        flashsale_id: flashsale.id,
+                        deleted_at: null,
+                    },
+                    transaction,
+                }
+            );
+
+            // Step 2: Add new products if provided
+            if (products && products.length > 0) {
+                // Validate all products exist before creating flashsale_products
                 const productValidations = await Promise.all(
                     products.map(async (product) => {
                         const productData = await models.products.findOne({
                             where: {
                                 id: product.id,
                                 booth_id: userBooth.id,
+                                deleted_at: null,
                             },
                             transaction,
                         });
@@ -398,49 +410,39 @@ export default class FlashsaleService {
 
                         return {
                             productData,
-                            flashsale_price: product.flashsale_price || productData.price, // Use provided flashsale price or original price
+                            flashsale_price:
+                                product.flashsale_price ||
+                                productData.after_flashsale_price ||
+                                productData.price,
                         };
                     })
                 );
-                // Update flashsale_products within transaction
+
+                // Create new flashsale_products entries
                 await Promise.all(
                     productValidations.map(async ({ productData, flashsale_price }) => {
-                        const flashsaleProduct = await models.flashsale_products.findOne({
-                            where: {
+                        await models.flashsale_products.create(
+                            {
+                                id: uuid.v4(),
                                 flashsale_id: flashsale.id,
                                 product_id: productData.id,
+                                is_sold_out: false,
+                                flashsale_price,
                             },
-                            transaction,
-                        });
-
-                        if (flashsaleProduct) {
-                            flashsaleProduct.flashsale_price = flashsale_price;
-                            await flashsaleProduct.save({ transaction });
-                        } else {
-                            // If the product does not exist in the flash sale, create it
-                            await models.flashsale_products.create(
-                                {
-                                    id: uuid.v4(),
-                                    flashsale_id: flashsale.id,
-                                    product_id: productData.id,
-                                    is_sold_out: false,
-                                    flashsale_price,
-                                },
-                                { transaction }
-                            );
-                        }
+                            { transaction }
+                        );
                     })
                 );
             }
-            // Commit the transaction
+
             await transaction.commit();
+
             return responseHandler.returnSuccess(
                 httpStatus.OK,
                 'Flash Sale Updated Successfully',
                 flashsale
             );
         } catch (e) {
-            // Rollback the transaction in case of error
             await transaction.rollback();
             logger.error('Flash sale update failed:', e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, 'Something Went Wrong!!');
@@ -485,7 +487,7 @@ export default class FlashsaleService {
             return responseHandler.returnSuccess(httpStatus.OK, 'Flash Sale Deleted Successfully');
         } catch (e) {
             logger.error(e);
-            console.log("\n\nError\n", e);
+            console.log('\n\nError\n', e);
             return responseHandler.returnError(httpStatus.BAD_GATEWAY, 'Something Went Wrong!!');
         }
     };

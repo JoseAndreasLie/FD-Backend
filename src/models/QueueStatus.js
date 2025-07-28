@@ -23,6 +23,18 @@ module.exports = (sequelize, DataTypes) => {
             flashsale_id: DataTypes.UUIDV4,
             current_queue_number: DataTypes.INTEGER,
             is_active: DataTypes.BOOLEAN,
+            created_at: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+            },
+            updated_at: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+            },
+            deleted_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
         },
         {
             sequelize,

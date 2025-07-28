@@ -30,6 +30,18 @@ module.exports = (sequelize, DataTypes) => {
             queue_entry_id: DataTypes.UUID,
             product_id: DataTypes.UUID,
             quantity: DataTypes.INTEGER,
+            created_at: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+            },
+            updated_at: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+            },
+            deleted_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
         },
         {
             sequelize,

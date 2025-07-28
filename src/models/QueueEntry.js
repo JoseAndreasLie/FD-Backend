@@ -38,6 +38,18 @@ module.exports = (sequelize, DataTypes) => {
             called_time: DataTypes.DATE,
             served_time: DataTypes.DATE,
             status: DataTypes.STRING,
+            created_at: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+            },
+            updated_at: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+            },
+            deleted_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
         },
         {
             sequelize,
