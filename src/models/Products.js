@@ -38,6 +38,18 @@ module.exports = (sequelize, DataTypes) => {
             price: DataTypes.DECIMAL,
             after_flashsale_price: DataTypes.DECIMAL,
             booth_id: DataTypes.UUIDV4,
+            created_at: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+            },
+            updated_at: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+            },
+            deleted_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
         },
         {
             sequelize,

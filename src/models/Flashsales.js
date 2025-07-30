@@ -61,6 +61,18 @@ module.exports = (sequelize, DataTypes) => {
             queue_early_access_time: DataTypes.STRING,
             flashsale_active_utc: DataTypes.DATE,
             flashsale_inactive_utc: DataTypes.DATE,
+            created_at: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+            },
+            updated_at: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+            },
+            deleted_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
         },
         {
             sequelize,

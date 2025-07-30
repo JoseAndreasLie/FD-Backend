@@ -148,6 +148,7 @@ export default class ProductService {
     }
 
     deleteProduct = async (id, userInfo) => {
+        const transaction = await models.sequelize.transaction();
         try {
             const userBooth = await models.booths.findOne({
                 where: {
@@ -175,16 +176,18 @@ export default class ProductService {
             }
 
             // Soft delete the product
-            // product.deleted_at = new Date();
-            // await product.save();
+            product.deleted_at = new Date();
+            await product.save();
 
-            await models.products.destroy({
-                where: {
-                    id,
-                    booth_id: userBooth.id,
-                    deleted_at: null,
-                }
-            });
+            await transaction.commit();
+
+            // await models.products.destroy({
+            //     where: {
+            //         id,
+            //         booth_id: userBooth.id,
+            //         deleted_at: null,
+            //     }
+            // });
 
             return responseHandler.returnSuccess(
                 httpStatus.OK,

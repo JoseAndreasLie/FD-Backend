@@ -173,18 +173,22 @@ export default class QueueService {
             }
 
             // queue = queue entries
-            queueStatus ? queueStatus.current_queue_number : 0
-
+            let currentQueueNumber;
+            if (queueStatus) {
+                currentQueueNumber = queueStatus.current_queue_number;
+            } else {
+                currentQueueNumber = 0;
+            }
             // current queue number order
 
             let currentQueueProducts = [];
 
-            if (queueStatus !== 0) {
+            if (currentQueueNumber == null || currentQueueNumber !== 0) {
                 let currentQueueDetail = await models.queue_entries.findOne({
                     where: {
                         booth_id: booth.id,
                         flashsale_id: flashsale.id,
-                        queue_number: queueStatus.current_queue_number,
+                        queue_number: currentQueueNumber,
                         deleted_at: null,
                     },
                     order: [['created_at', 'DESC']],
@@ -199,6 +203,7 @@ export default class QueueService {
                         model: models.products,
                         as: 'product',
                         attributes: ['id', 'name', 'price', 'img_url'],
+                        where: { deleted_at: null }
                     }],
                     attributes: ['product_id', 'quantity'],
                 });

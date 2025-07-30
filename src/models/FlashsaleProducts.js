@@ -32,6 +32,18 @@ module.exports = (sequelize, DataTypes) => {
             product_id: DataTypes.UUIDV4,
             flashsale_id: DataTypes.UUIDV4,
             is_sold_out: DataTypes.BOOLEAN,
+            created_at: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+            },
+            updated_at: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+            },
+            deleted_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
         },
         {
             sequelize,
